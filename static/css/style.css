@@ -1,0 +1,9 @@
+.base-container {
+	margin-top: 10%;
+}
+.host-active {
+	color: #4caf50 !important;
+}
+.host-disabled {
+	color: #f44336 !important;
+}
