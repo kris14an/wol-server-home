@@ -1,0 +1,58 @@
+#! /bin/sh
+# /etc/init.d/blah
+#
+
+SERVICE_NAME=wol-server
+
+APP_DIR=/opt/wol-server
+
+SCRIPT="node/bin/node server.js"
+RUNAS=root
+
+PIDFILE=/var/run/$SERVICE_NAME.pid
+LOGFILE=/var/log/$SERVICE_NAME.log
+
+start() {
+  echo $PIDNAME
+  if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE"); then
+    echo 'Service already running' >&2
+    return 1
+  fi
+  echo 'Starting service…' >&2
+  cd $APP_DIR
+  local CMD="cd $APP_DIR && ls -l && $SCRIPT &> \"$LOGFILE\" & echo \$!"
+  su -c "$CMD" $RUNAS > "$PIDFILE"
+  echo 'Service started' >&2
+}
+
+stop() {
+  if [ ! -f "$PIDFILE" ] || ! kill -0 $(cat "$PIDFILE"); then
+    echo 'Service not running' >&2
+    return 1
+  fi
+  echo 'Stopping service…' >&2
+  kill -15 $(cat "$PIDFILE") && rm -f "$PIDFILE"
+  echo 'Service stopped' >&2
+}
+
+uninstall() {
+  echo "Currently not supported!"
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  retart)
+    stop
+    start
+    ;;
+  uninstall)
+    uninstall
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|uninstall}"
+esac
